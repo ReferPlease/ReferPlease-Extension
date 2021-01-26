@@ -1,3 +1,5 @@
+var res;
+
 chrome.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
     console.log(sender.tab ?
@@ -6,7 +8,6 @@ chrome.runtime.onMessage.addListener(
     if (request.postUrl) {
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
-      myHeaders.append("Access-Control-Allow-Origin","no-cors");
       
       var raw = JSON.stringify(request);
       
@@ -17,11 +18,12 @@ chrome.runtime.onMessage.addListener(
         redirect: 'follow'
       };
       
-      fetch("http://localhost:8080/thirdparty/post/save", requestOptions)
-        .then(response => response.text())
-        .then(result => console.log(result))
+      fetch("http://referplease.com/thirdparty/post/save", requestOptions)
+        .then(response => res = response)
+        .then(response => sendResponse(response.status))
         .catch(error => console.log('error', error));
 
     }
+    return true;
   }
 );
