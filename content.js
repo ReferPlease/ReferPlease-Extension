@@ -55,7 +55,6 @@ if (targetNode) {
         console.log(postContainer);
         sendSaveRequestToApi(postContainer);
 
-        alert("Shared. Always ask permission before sharing");
       }
     });
 }
@@ -101,14 +100,22 @@ function sendSaveRequestToApi(postContainer) {
   }
   console.log(request);
 
-  chrome.runtime.sendMessage(request);
+  chrome.runtime.sendMessage(request,function(status) {
+    if(status == 200)
+      alert("Shared. Always ask permission of post owner before sharing");
+    else
+      alert("Sync API Failed! Please try again")
+  });
 }
-
 
 
 
 addSendApiListener();
 
+window.onerror = function (message, file, line, col, error) {
+  alert("Error occurred: " + error.message);
+  return false;
+};
 
 
 // Options for the observer (which mutations to observe)
