@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="popup.css">
+    <title>Refer Please</title>
+    <script src="popup.js" defer></script>
+</head>
+
+<body>
+    <button id="try">Try</button>
+    <div id="loggedIn" class="hide">
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1518806118471-f28b20a1d79d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2600&q=80"
+                alt="John" style="width:100%">
+            <h1>John Doe</h1>
+            <p class="title">CEO & Founder, Example</p>
+            <p>Harvard University</p>
+            <p>
+                <a target="_blank" href="https://www.referplease.com/api/logout">Logout</a>
+            </p>
+        </div>
+    </div>
+    <div id="loggedOut">
+        <div class="card">
+            <p>
+                <a href="https://www.referplease.com/api/oauth2/authorization/google" target="_blank">Login with
+                    Google
+                </a>
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>
