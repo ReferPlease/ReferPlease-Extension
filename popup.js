@@ -2,11 +2,12 @@ let loggedIn = document.getElementById("loggedIn");
 let loggedOut = document.getElementById("loggedOut");
 let user = null;
 let _try = document.getElementById("try");
+let imageElement = document.getElementById("imageurl");
+let nameElement = document.getElementById("username");
 
-_try.onclick = (ev) => {
+/*_try.onclick = (ev) => {
     chrome.extension.sendMessage("try");
-} 
-
+}*/
 
 function setUser({ firstName, lastName, isLoggedIn, imageUrl }) {
     user = {
@@ -20,6 +21,8 @@ function setUser({ firstName, lastName, isLoggedIn, imageUrl }) {
 }
 
 function setLoggedIn() {
+    imageElement.src = user.imageUrl;
+    nameElement.textContent = `${user.firstName} ${user.lastName ? user.lastName : ""}`
     loggedIn.classList.remove("hide");
     loggedOut.classList.add("hide");
 }
