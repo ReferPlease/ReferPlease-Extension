@@ -21,6 +21,7 @@ chrome.runtime.onMessage.addListener(
       };
 
       console.log('for me', request, sender, sendResponse);
+      //sendResponse(200);
 
       fetch("https://www.referplease.com/api/thirdparty/post/save", requestOptions)
         .then(response => res = response)
@@ -32,13 +33,23 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
+let userdata = {
+  isLoggedIn: false
+};
+
 chrome.runtime.onMessage.addListener(async function (message, callback) {
   if (message === "try") {
     let user = await fetchUser();
-    chrome.extension.sendMessage(JSON.stringify({
+    userdata = user;
+    chrome.extension.sendMessage({
       type: "user",
       data: user
-    }));
+    });
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, { type: "userdata", data: userdata }, function (response) {
+        console.log(response);
+      });
+    });
     console.log(user);
   }
 });

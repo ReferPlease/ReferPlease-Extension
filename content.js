@@ -1,4 +1,13 @@
 const postButtonContainerClass = "feed-shared-social-actions feed-shared-social-action-bar social-detail-base-social-actions feed-shared-social-action-bar--has-social-counts";
+const POST_ID_REGEX = /(\d{19})/gm;
+const COMPANY_URL_REGEX = /(company)|(miniCompany)/gmi;
+let user = {
+  isLoggedIn: false
+};
+let popupState = {
+  spread: true,
+};
+let buttonsAdded = [];
 
 const buttonMarkup = `<button class="message-anywhere-button send-privately-button artdeco-button artdeco-button--4 artdeco-button--tertiary  artdeco-button--muted " aria-label="Spread a message" type="button">
 <li-icon aria-hidden="true" type="send-privately-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor" class="mercado-match" width="24" height="24" focusable="false">
@@ -11,6 +20,38 @@ let linkedInProfileStartUrl = "https://www.linkedin.com/in/";
 let linkedInProfileEndUrl = "?miniProfileUrn";
 
 
+function updateUser(data, _popuState) {
+  user = data;
+  popupState = _popuState;
+  //console.warn('update', user, popupState);
+  if (user.isLoggedIn && popupState.spread) {
+    if (buttonsAdded.length <= 0) return addButtons();
+    return;
+  }
+  if (buttonsAdded.length > 0) removeButtons();
+}
+
+chrome.runtime.onMessage.addListener(function (message, callback) {
+  //console.warn('content runtime', message);
+  let { type, data } = message;
+  //console.warn("data", data);
+  switch (type) {
+    case "userdata": {
+      updateUser(data, popupState);
+      break;
+    }
+    case "spread": {
+      updateUser(user, data);
+      break;
+    }
+    default: {
+      console.warn("Unhandled message", message);
+      break;
+    }
+  }
+  return true;
+});
+
 
 // Select the node that will be observed for mutations
 const targetNode = document.getElementsByTagName("body")[0];
@@ -22,44 +63,85 @@ function createButtonElement() {
 }
 
 function appendButtonToContainer(buttonContainer) {
-  shareButton = createButtonElement();
-  shareButton.classList.add("spreadButton")
-  buttonContainer.appendChild(shareButton);
+  if (buttonContainer.classList.contains("__processed")) return;
+  buttonContainer.classList.add("__processed");
+  try {
+    let ember = buttonContainer.closest('div[data-id]');
+    let hrefEl = ember.querySelector("a[data-control-name]");
+    let href = hrefEl.href;
+    //console.warn(href);
+    if (COMPANY_URL_REGEX.test(href)) {
+      //console.warn("Not adding button for", buttonContainer);
+      throw Error("forced quit");
+      return;
+    }
+    else {
+      //console.warn("adding button for", buttonContainer);
+      shareButton = createButtonElement();
+      shareButton.classList.add("spreadButton")
+      buttonsAdded.push(shareButton);
+      buttonContainer.appendChild(shareButton);
+    }
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 
 
 
-(function addButtons() {
+function addButtons() {
   let listOfButtonsOfPosts = document.getElementsByClassName(postButtonContainerClass);
   let numberOfPosts = listOfButtonsOfPosts.length;
   for (i = 0; i < numberOfPosts; i++) {
     let buttonContainer = listOfButtonsOfPosts[i];
+    //console.warn("call from addButtons");
     appendButtonToContainer(buttonContainer);
   }
-})();
+};
+function removeButtons() {
+  while (buttonsAdded.length > 0) {
+    let buttn = buttonsAdded.shift();
+    buttn.closest(".__processed").classList.remove("__processed");
+    buttn.remove();
+  }
+};
 
 
-function addSendApiListener(){
-if (targetNode) {
-  targetNode.addEventListener("click", event => {
+function addSendApiListener() {
+  if (targetNode) {
+    targetNode.addEventListener("click", event => {
       let clickedElement = event.target;
-      // console.log(event.target.parentNode.parentNode.parentNode);
+      // console.warn(event.target.parentNode.parentNode.parentNode);
       if (clickedElement.closest('.spreadButton')) {
-        console.log(clickedElement);
+        //console.warn(clickedElement);
         let postContainer = clickedElement;
         while (!postContainer.classList.contains("relative") && !postContainer.classList.contains("ember-view")) {
           postContainer = postContainer.parentNode;
 
         }
-        console.log(postContainer);
+        //console.warn(postContainer);
         sendSaveRequestToApi(postContainer);
 
       }
     });
+  }
 }
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
-function sendSaveRequestToApi(postContainer) {
+async function sendSaveRequestToApi(postContainer) {
+  let _postUrl = '';
+  //console.warn(postContainer);
+  postContainer.querySelector(".feed-shared-control-menu__trigger").click();
+  let shareButton = postContainer.querySelectorAll(".artdeco-dropdown__content-inner li>div")[1];
+  while (shareButton === null || typeof shareButton === "undefined") {
+    //console.warn(shareButton);
+    await sleep(200);
+    shareButton = postContainer.querySelectorAll(".artdeco-dropdown__content-inner li>div")[1];
+  }
+  shareButton.click();
+  _postUrl = await navigator.clipboard.readText();
   let postUrl = postContainer.getAttribute("data-urn");
   let thirdPartyPostId = postUrl.substring("urn:li:activity:".length);
   let userName = postContainer.getElementsByClassName("feed-shared-actor__name t-14 t-bold hoverable-link-text t-black")[0].textContent.trim();
@@ -71,26 +153,30 @@ function sendSaveRequestToApi(postContainer) {
   let relativeTimeElement = postContainer.getElementsByClassName("feed-shared-actor__sub-description t-12 t-normal t-black--light")[0].textContent.trim();
   let relativeTime = relativeTimeElement.substring(0, relativeTimeElement.indexOf(" "));
   let postedAt = new Date();
-  if(relativeTime.includes("mo")){
-      postedAt.setMonth(postedAt.getMonth()-relativeTime.replace(/[A-Za-z$-]/g, ""));
-  } else if(relativeTime.includes("m")){
-    postedAt.setMinutes(postedAt.getMinutes()-relativeTime.replace(/[A-Za-z$-]/g, ""));
+  if (relativeTime.includes("mo")) {
+    postedAt.setMonth(postedAt.getMonth() - relativeTime.replace(/[A-Za-z$-]/g, ""));
+  } else if (relativeTime.includes("m")) {
+    postedAt.setMinutes(postedAt.getMinutes() - relativeTime.replace(/[A-Za-z$-]/g, ""));
 
-  }else if (relativeTime.includes("d")){
-    postedAt.setDate(postedAt.getDate()-relativeTime.replace(/[A-Za-z$-]/g, ""));
+  } else if (relativeTime.includes("d")) {
+    postedAt.setDate(postedAt.getDate() - relativeTime.replace(/[A-Za-z$-]/g, ""));
 
-  }else if(relativeTime.includes("y")){
-    postedAt.setFullYear(postedAt.getFullYear()-relativeTime.replace(/[A-Za-z$-]/g, ""));
-  }else if(relativeTime.includes("h")){
-    postedAt.setHours(postedAt.getHours()-relativeTime.replace(/[A-Za-z$-]/g, ""));
-  }else if(relativeTime.includes("w")){
-    postedAt.setDate(postedAt.getDate()-relativeTime.replace(/[A-Za-z$-]/g, "")*7);
+  } else if (relativeTime.includes("y")) {
+    postedAt.setFullYear(postedAt.getFullYear() - relativeTime.replace(/[A-Za-z$-]/g, ""));
+  } else if (relativeTime.includes("h")) {
+    postedAt.setHours(postedAt.getHours() - relativeTime.replace(/[A-Za-z$-]/g, ""));
+  } else if (relativeTime.includes("w")) {
+    postedAt.setDate(postedAt.getDate() - relativeTime.replace(/[A-Za-z$-]/g, "") * 7);
   }
 
+  let postID = _postUrl.match(POST_ID_REGEX);
+  if (postID) postID = postID[0];
+
   let request = {
-    "postUrl": postUrl,
-    "thirdPartyPostId": thirdPartyPostId,
+    //"postUrl": postUrl,
+    "thirdPartyPostId": postID,
     "userName": userName,
+    "postUrl": _postUrl,
     "userHeadline": userHeadline,
     "postContent": postContent,
     "hashtags": hashtags,
@@ -98,10 +184,14 @@ function sendSaveRequestToApi(postContainer) {
     "userVanityUrl": userVanityUrl,
     "postedAt": postedAt
   }
-  console.log(request);
+  if (COMPANY_URL_REGEX.test(request.userProfileHref)) return;
+  if (hashtags && hashtags.length) {
+    hashtags = [...new Set(hashtags)];
+  }
+  console.warn(request);
 
-  chrome.runtime.sendMessage(request,function(status) {
-    if(status == 200)
+  chrome.runtime.sendMessage(request, function (status) {
+    if (status == 200)
       alert("Shared. Always ask permission of post owner before sharing");
     else
       alert("Sync API Failed! Please try again")
@@ -126,16 +216,17 @@ const callback = function (mutationsList, observer) {
   // Use traditional 'for loops' for IE 11
 
   for (const mutation of mutationsList) {
-    if(mutation.target.classList.contains("voyager-feed")){
+    if (mutation.target.classList.contains("voyager-feed")) {
       addSendApiListener();
     }
     if (mutation.type === 'childList') {
       if (mutation.target.classList.contains('feed-shared-social-actions') && mutation.target.children.length == 4) {
-        appendButtonToContainer(mutation.target);
-
+        if (user.isLoggedIn && popupState.spread) {
+          //console.warn("call from callback");
+          appendButtonToContainer(mutation.target)
+        };
       }
     }
-
   }
 };
 
@@ -146,3 +237,4 @@ const observer = new MutationObserver(callback);
 
 // Start observing the target node for configured mutations
 observer.observe(targetNode, config);
+chrome.extension.sendMessage("try");

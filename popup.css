@@ -2,9 +2,8 @@
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   max-width: 300px;
   margin: auto;
-  text-align: center;
+  text-align: left;
   min-width: 250px;
-  padding: 1rem;
 }
 
 .hide {
@@ -53,4 +52,17 @@ a:hover {
     hsla(0, 0%, 100%, 0.5),
     #fff
   );
+}
+
+.row {
+  display: flex;
+  align-items: center;
+}
+.row > img {
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+}
+.row > *:first-child {
+  margin: 0.6rem;
 }
