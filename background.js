@@ -1,4 +1,5 @@
 var res;
+let initialised = false;
 
 chrome.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
@@ -21,12 +22,12 @@ chrome.runtime.onMessage.addListener(
       };
 
       console.log('for me', request, sender, sendResponse);
-      //sendResponse(200);
+      sendResponse(200);
 
-      fetch("https://www.referplease.com/api/thirdparty/post/save", requestOptions)
+      /*fetch("https://www.referplease.com/api/thirdparty/post/save", requestOptions)
         .then(response => res = response)
         .then(response => sendResponse(response.status))
-        .catch(error => console.log('error', error));
+        .catch(error => console.log('error', error));*/
 
     }
     return true;
@@ -38,13 +39,11 @@ let userdata = {
 };
 
 chrome.runtime.onMessage.addListener(async function (message, callback) {
+  console.log("recieved", message);
   if (message === "try") {
     let user = await fetchUser();
     userdata = user;
-    chrome.extension.sendMessage({
-      type: "user",
-      data: user
-    });
+    initialised = true;
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       chrome.tabs.sendMessage(tabs[0].id, { type: "userdata", data: userdata }, function (response) {
         console.log(response);
@@ -52,6 +51,18 @@ chrome.runtime.onMessage.addListener(async function (message, callback) {
     });
     console.log(user);
   }
+  if (message === "getuser") {
+    if (!initialised) {
+      let user = await fetchUser();
+      userdata = user;
+      initialised = true;
+    }
+    chrome.extension.sendMessage({
+      type: "user",
+      data: userdata
+    });
+  }
+  return true;
 });
 
 async function fetchUser() {

@@ -32,9 +32,9 @@ function updateUser(data, _popuState) {
 }
 
 chrome.runtime.onMessage.addListener(function (message, callback) {
-  //console.warn('content runtime', message);
+  console.warn('content runtime', message);
   let { type, data } = message;
-  //console.warn("data", data);
+  console.warn("data", data);
   switch (type) {
     case "userdata": {
       updateUser(data, popupState);
@@ -42,6 +42,10 @@ chrome.runtime.onMessage.addListener(function (message, callback) {
     }
     case "spread": {
       updateUser(user, data);
+      break;
+    }
+    case "removeSpread": {
+      updateUser({ isLoggedIn: false }, popupState);
       break;
     }
     default: {
@@ -66,7 +70,7 @@ function appendButtonToContainer(buttonContainer) {
   if (buttonContainer.classList.contains("__processed")) return;
   buttonContainer.classList.add("__processed");
   try {
-    let ember = buttonContainer.closest('div[data-id]');
+    let ember = buttonContainer.closest('div[data-urn]');
     let hrefEl = ember.querySelector("a[data-control-name]");
     let href = hrefEl.href;
     //console.warn(href);
@@ -140,14 +144,22 @@ async function sendSaveRequestToApi(postContainer) {
     await sleep(200);
     shareButton = postContainer.querySelectorAll(".artdeco-dropdown__content-inner li>div")[1];
   }
+  let content = postContainer.getElementsByClassName("feed-shared-text relative feed-shared-update-v2__commentary  ember-view")[0];
+  let contentClone = content.cloneNode(true);
+  contentClone.querySelectorAll("a").forEach(anchor => {
+    let anc = document.createElement("a");
+    anc.href = anchor.href;
+    anc.textContent = anchor.textContent;
+    anchor.textContent = anc.outerHTML;
+  });
   shareButton.click();
   _postUrl = await navigator.clipboard.readText();
   let postUrl = postContainer.getAttribute("data-urn");
   let thirdPartyPostId = postUrl.substring("urn:li:activity:".length);
   let userName = postContainer.getElementsByClassName("feed-shared-actor__name t-14 t-bold hoverable-link-text t-black")[0].textContent.trim();
   let userHeadline = postContainer.getElementsByClassName("feed-shared-actor__description t-12 t-normal t-black--light")[0].textContent.trim();
-  let postContent = postContainer.getElementsByClassName("feed-shared-text relative feed-shared-update-v2__commentary  ember-view")[0].innerHTML.replace(/<br>/g, "\n").replace(/(<([^>]+)>)/gi, "").trim()
-  let hashtags = postContainer.getElementsByClassName("feed-shared-text relative feed-shared-update-v2__commentary  ember-view")[0].innerHTML.match(/#[A-Za-z]+/g);
+  let postContent = contentClone.textContent.trim();
+  let hashtags = content.innerHTML.match(/#[A-Za-z]+/g);
   let userProfileHref = postContainer.getElementsByClassName("app-aware-link feed-shared-actor__container-link relative display-flex flex-grow-1")[0].getAttribute("href");
   let userVanityUrl = userProfileHref.substring(linkedInProfileStartUrl.length, userProfileHref.indexOf(linkedInProfileEndUrl));
   let relativeTimeElement = postContainer.getElementsByClassName("feed-shared-actor__sub-description t-12 t-normal t-black--light")[0].textContent.trim();
@@ -189,7 +201,6 @@ async function sendSaveRequestToApi(postContainer) {
     hashtags = [...new Set(hashtags)];
   }
   console.warn(request);
-
   chrome.runtime.sendMessage(request, function (status) {
     if (status == 200)
       alert("Shared. Always ask permission of post owner before sharing");
@@ -237,4 +248,11 @@ const observer = new MutationObserver(callback);
 
 // Start observing the target node for configured mutations
 observer.observe(targetNode, config);
+
+document.addEventListener("visibilitychange", (ev) => {
+  console.warn("Visibility", ev, document.visibilityState);
+  if (document.visibilityState === "visible") {
+    chrome.runtime.sendMessage("try");
+  }
+});
 chrome.extension.sendMessage("try");

@@ -1,5 +1,6 @@
 let loggedIn = document.getElementById("loggedIn");
 let loggedOut = document.getElementById("loggedOut");
+let logOutButton = document.getElementById("logout_button");
 let user = null;
 let _try = document.getElementById("try");
 let imageElement = document.getElementById("imageurl");
@@ -14,6 +15,12 @@ showspreadElement.addEventListener("change", e => {
     });
 });
 
+
+logOutButton.addEventListener("click", (ev) => {
+    /*chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, { type: "removeSpread", data: null }, console.log);
+    });*/
+});
 /*_try.onclick = (ev) => {
     chrome.extension.sendMessage("try");
 }*/
@@ -49,7 +56,7 @@ chrome.extension.onMessage.addListener(function (msg, callback) {
 });
 
 function initialise() {
-    chrome.extension.sendMessage("try");
+    chrome.extension.sendMessage("getuser");
     let checked = showspreadElement.checked;
     let local = localStorage.getItem("spread");
     if (local) {
