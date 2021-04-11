@@ -158,7 +158,8 @@ async function sendSaveRequestToApi(postContainer) {
   let thirdPartyPostId = postUrl.substring("urn:li:activity:".length);
   let userName = postContainer.getElementsByClassName("feed-shared-actor__name t-14 t-bold hoverable-link-text t-black")[0].textContent.trim();
   let userHeadline = postContainer.getElementsByClassName("feed-shared-actor__description t-12 t-normal t-black--light")[0].textContent.trim();
-  let postContent = contentClone.textContent.trim();
+  //let postContent = contentClone.textContent.trim();
+  let postContent = content.innerHTML.replace(/<br>/g, "\n").replace(/(<([^>]+)>)/gi, "").trim()
   let hashtags = content.innerHTML.match(/#[A-Za-z]+/g);
   let userProfileHref = postContainer.getElementsByClassName("app-aware-link feed-shared-actor__container-link relative display-flex flex-grow-1")[0].getAttribute("href");
   let userVanityUrl = userProfileHref.substring(linkedInProfileStartUrl.length, userProfileHref.indexOf(linkedInProfileEndUrl));
@@ -201,6 +202,7 @@ async function sendSaveRequestToApi(postContainer) {
     hashtags = [...new Set(hashtags)];
   }
   console.warn(request);
+  //return;
   chrome.runtime.sendMessage(request, function (status) {
     if (status == 200)
       alert("Shared. Always ask permission of post owner before sharing");
