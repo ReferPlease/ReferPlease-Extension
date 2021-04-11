@@ -57,6 +57,7 @@ chrome.extension.onMessage.addListener(function (msg, callback) {
 
 function initialise() {
     chrome.extension.sendMessage("getuser");
+    chrome.extension.sendMessage("try");
     let checked = showspreadElement.checked;
     let local = localStorage.getItem("spread");
     if (local) {

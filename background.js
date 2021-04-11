@@ -52,11 +52,14 @@ chrome.runtime.onMessage.addListener(async function (message, callback) {
     console.log(user);
   }
   if (message === "getuser") {
-    if (!initialised) {
-      let user = await fetchUser();
+    fetchUser().then(user => {
       userdata = user;
       initialised = true;
-    }
+      chrome.extension.sendMessage({
+        type: "user",
+        data: userdata
+      });
+    }).catch(console.error);
     chrome.extension.sendMessage({
       type: "user",
       data: userdata
