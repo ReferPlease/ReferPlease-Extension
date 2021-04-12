@@ -205,7 +205,7 @@ async function sendSaveRequestToApi(postContainer) {
   //return;
   chrome.runtime.sendMessage(request, function (status) {
     if (status == 200)
-      alert("Shared. Always ask permission of post owner before sharing");
+      alert("Shared. Together we are stronger.");
     else
       alert("Sync API Failed! Please try again")
   });
