@@ -24,6 +24,7 @@
         "service_worker": "background.js"
     },
     "action": {
+        "default_icon": "logo.png",
         "default_popup": "popup.html"
     }
 }
