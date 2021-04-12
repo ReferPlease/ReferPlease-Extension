@@ -32,9 +32,9 @@ function updateUser(data, _popuState) {
 }
 
 chrome.runtime.onMessage.addListener(function (message, callback) {
-  console.warn('content runtime', message);
+  //console.warn('content runtime', message);
   let { type, data } = message;
-  console.warn("data", data);
+  //console.warn("data", data);
   switch (type) {
     case "userdata": {
       updateUser(data, popupState);
@@ -49,7 +49,7 @@ chrome.runtime.onMessage.addListener(function (message, callback) {
       break;
     }
     default: {
-      console.warn("Unhandled message", message);
+      //console.warn("Unhandled message", message);
       break;
     }
   }
@@ -252,7 +252,7 @@ const observer = new MutationObserver(callback);
 observer.observe(targetNode, config);
 
 document.addEventListener("visibilitychange", (ev) => {
-  console.warn("Visibility", ev, document.visibilityState);
+  //console.warn("Visibility", ev, document.visibilityState);
   if (document.visibilityState === "visible") {
     chrome.runtime.sendMessage("try");
   }

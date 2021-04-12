@@ -22,13 +22,14 @@ chrome.runtime.onMessage.addListener(
       };
 
       console.log('for me', request, sender, sendResponse);
-      sendResponse(200);
+      //sendResponse(200);
 
       fetch("https://www.referplease.com/api/thirdparty/post/save", requestOptions)
-        .then(response => res = response)
-        .then(response => sendResponse(response.status))
-        .catch(error => console.log('error', error));
-
+        .then(response => {
+          console.log('response',response);
+          sendResponse(response.status);
+        })
+        .catch(error => alert('error', error));
     }
     return true;
   }
