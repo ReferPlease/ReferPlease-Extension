@@ -118,8 +118,9 @@ async function sendSaveRequestToApi(postContainer) {
     else {
         while (true) {
             try {
-                let cancelButton = document.querySelector(`li-icon[type="cancel-icon"]`).parentNode;
+                let cancelButton = document.getElementsByClassName(`artdeco-toast-item__dismiss artdeco-button artdeco-button--circle artdeco-button--muted artdeco-button--1 artdeco-button--tertiary ember-view`)[0];
                 cancelButton.click();
+                await sleep(300);
             } catch (err) {
                 break;
             }
