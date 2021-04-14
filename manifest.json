@@ -6,9 +6,15 @@
         {
             "matches": [
                 "https://www.linkedin.com/*",
-                "https://www.linkedin.com/**"
+                "https://www.linkedin.com/**",
+                "https://www.referplease.com/*",
+                "https://www.referplease.com/**",
+                "http://localhost:81/*",
+                "http://localhost:81/**"
             ],
             "js": [
+                "linkedin_content.js",
+                "referplease_content.js",
                 "content.js"
             ]
         }
