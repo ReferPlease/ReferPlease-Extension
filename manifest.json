@@ -1,7 +1,7 @@
 {
-    "manifest_version": 3,
+    "manifest_version": 4,
     "name": "Add Referrals",
-    "version": "0.1",
+    "version": "1.1",
     "content_scripts": [
         {
             "matches": [
