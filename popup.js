@@ -53,6 +53,8 @@ chrome.extension.onMessage.addListener(function (msg, callback) {
     if (type === "user") {
         setUser(data);
     }
+    callback("done #56");
+    return true;
 });
 
 function initialise() {

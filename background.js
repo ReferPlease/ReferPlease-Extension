@@ -20,16 +20,13 @@ chrome.runtime.onMessage.addListener(
         body: raw,
         redirect: 'follow'
       };
-
       console.log('for me', request, sender, sendResponse);
-      //sendResponse(200);
-
-      fetch("https://www.referplease.com/api/thirdparty/post/save", requestOptions)
-        .then(response => {
-          console.log('response',response);
-          sendResponse(response.status);
-        })
-        .catch(error => alert('error', error));
+      fetch("https://www.referplease.com/api/thirdparty/post/save", requestOptions).then(res => {
+        sendResponse(res.status);
+      }).catch(err => {
+        console.error(err);
+        sendResponse(500);
+      });
     }
     return true;
   }
