@@ -8,9 +8,7 @@
                 "https://www.linkedin.com/*",
                 "https://www.linkedin.com/**",
                 "https://www.referplease.com/*",
-                "https://www.referplease.com/**",
-                "http://localhost:81/*",
-                "http://localhost:81/**"
+                "https://www.referplease.com/**"
             ],
             "js": [
                 "linkedin_content.js",
