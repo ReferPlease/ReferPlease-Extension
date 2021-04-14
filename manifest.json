@@ -23,8 +23,7 @@
         "https://www.referplease.com/*"
     ],
     "permissions": [
-        "webRequest",
-        "clipboardRead"
+        "webRequest"
     ],
     "background": {
         "service_worker": "background.js"
