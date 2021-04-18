@@ -193,6 +193,7 @@ async function sendSaveRequestToApi(postContainer) {
     }
     if (COMPANY_URL_REGEX.test(request.userProfileHref)) return;
     if (hashtags && hashtags.length) {
+        hashtags = hashtags.map(tag => tag.toLowerCase());
         hashtags = [...new Set(hashtags)];
     }
     console.warn(request);
