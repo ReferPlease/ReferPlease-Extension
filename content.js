@@ -1,8 +1,9 @@
 let __HOSTNAME = window.location.hostname;
-
+//const __REFERPLEASE_HOSTNAMES = ["localhost", "www.referplease.com"];
+const __REFERPLEASE_HOSTNAMES = ["www.referplease.com"];
 console.log(__HOSTNAME);
 
-if (__HOSTNAME === "www.referplease.com") {
+if (__REFERPLEASE_HOSTNAMES.includes(__HOSTNAME)) {
   __REFERPLEASE_start();
 }
 /*else if (__HOSTNAME === "localhost") {
