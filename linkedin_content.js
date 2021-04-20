@@ -1,7 +1,6 @@
 const postButtonContainerClass = "feed-shared-social-actions feed-shared-social-action-bar social-detail-base-social-actions feed-shared-social-action-bar--has-social-counts";
 const POST_ID_REGEX = /(\d{19})/gm;
 const COMPANY_URL_REGEX = /(company)|(miniCompany)/gmi;
-const HASHTAG_ACTIVITY_ID = /hashtag\/\?.*activity%3A(\d+)"/gm;
 let user = {
     isLoggedIn: false
 };
@@ -107,15 +106,18 @@ function sleep(ms) {
 }
 async function sendSaveRequestToApi(postContainer) {
     let _postUrl = '';
+    let HASHTAG_ACTIVITY_ID = /hashtag\/\?.*activity%3A(\d+)"/gm;
     //console.warn(postContainer);
     let __str = postContainer.outerHTML;
     let ___POST_ID = null;
     let __matches = HASHTAG_ACTIVITY_ID.exec(__str);
     if (__matches) {
+        //console.warn("Matched", __matches, __str);
         ___POST_ID = __matches[1];
         _postUrl = `https://www.linkedin.com/feed/update/urn:li:activity:${___POST_ID}/`;
     }
     else {
+        //console.warn("Not Matched", __matches, __str);
         while (true) {
             try {
                 let cancelButton = document.getElementsByClassName(`artdeco-toast-item__dismiss artdeco-button artdeco-button--circle artdeco-button--muted artdeco-button--1 artdeco-button--tertiary ember-view`)[0];
@@ -191,12 +193,21 @@ async function sendSaveRequestToApi(postContainer) {
         "userVanityUrl": userVanityUrl,
         "postedAt": postedAt
     }
+    //console.warn(request.postedAt);
+    let currentDate = new Date();
+    let time_diff = currentDate.getTime() - request.postedAt.getTime();
+    time_diff = time_diff / (1000 * 60 * 60 * 24);
+    //console.warn(time_diff);
+    if (time_diff > 2.0) {
+        alert("Sorry, post does not looks fresh.");
+        return;
+    }
     if (COMPANY_URL_REGEX.test(request.userProfileHref)) return;
     if (hashtags && hashtags.length) {
         hashtags = hashtags.map(tag => tag.toLowerCase());
         hashtags = [...new Set(hashtags)];
     }
-    console.warn(request);
+    //console.warn(request);
     //return;
     chrome.runtime.sendMessage(request, status => {
         console.log(status);
