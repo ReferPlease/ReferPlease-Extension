@@ -22,7 +22,7 @@ logOutButton.addEventListener("click", (ev) => {
     });*/
 });
 /*_try.onclick = (ev) => {
-    chrome.extension.sendMessage("try");
+    chrome.runtime.sendMessage("try");
 }*/
 
 function setUser({ firstName, lastName, isLoggedIn, imageUrl }) {
@@ -48,7 +48,7 @@ function setLoggedOut() {
     loggedIn.classList.add("hide");
 }
 
-chrome.extension.onMessage.addListener(function (msg, callback) {
+chrome.runtime.onMessage.addListener(function (msg, callback) {
     let { data, type } = msg;
     if (type === "user") {
         setUser(data);
@@ -58,8 +58,8 @@ chrome.extension.onMessage.addListener(function (msg, callback) {
 });
 
 function initialise() {
-    chrome.extension.sendMessage("getuser");
-    chrome.extension.sendMessage("try");
+    chrome.runtime.sendMessage("getuser");
+    chrome.runtime.sendMessage("try");
     let checked = showspreadElement.checked;
     let local = localStorage.getItem("spread");
     if (local) {

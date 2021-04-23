@@ -282,10 +282,10 @@ function __LINKEDIN_start() {
     observer.observe(targetNode, config);
 
     document.addEventListener("visibilitychange", (ev) => {
-        //console.warn("Visibility", ev, document.visibilityState);
+        // console.warn("Visibility", ev, document.visibilityState);
         if (document.visibilityState === "visible") {
             chrome.runtime.sendMessage("try");
         }
     });
-    chrome.extension.sendMessage("try");
+    chrome.runtime.sendMessage("try");
 }
