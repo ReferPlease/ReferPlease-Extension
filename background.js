@@ -53,12 +53,12 @@ chrome.runtime.onMessage.addListener(async function (message, callback) {
     fetchUser().then(user => {
       userdata = user;
       initialised = true;
-      chrome.extension.sendMessage({
+      chrome.runtime.sendMessage({
         type: "user",
         data: userdata
       });
     }).catch(console.error);
-    chrome.extension.sendMessage({
+    chrome.runtime.sendMessage({
       type: "user",
       data: userdata
     });
