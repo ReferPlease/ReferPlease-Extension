@@ -35,12 +35,24 @@ chrome.runtime.onMessage.addListener(
 let userdata = {
   isLoggedIn: false
 };
+let isAdmin = false;
+let unmoderatedCount = 1;
+
+function updateUser(data) {
+  userdata = data;
+  if (userdata.isLoggedIn) {
+    isAdmin = userdata.roles.map(x => x.authority).includes("ROLE_ADMIN");
+  }
+  else {
+    isAdmin = false;
+  }
+}
 
 chrome.runtime.onMessage.addListener(async function (message, callback) {
   console.log("recieved", message);
   if (message === "try") {
     let user = await fetchUser();
-    userdata = user;
+    updateUser(user);
     initialised = true;
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       chrome.tabs.sendMessage(tabs[0].id, { type: "userdata", data: userdata }, function (response) {
@@ -51,7 +63,7 @@ chrome.runtime.onMessage.addListener(async function (message, callback) {
   }
   if (message === "getuser") {
     fetchUser().then(user => {
-      userdata = user;
+      updateUser(user);
       initialised = true;
       chrome.runtime.sendMessage({
         type: "user",
@@ -72,3 +84,40 @@ async function fetchUser() {
   );
   return await user.json();
 }
+
+async function getUnmoderatedPostCount() {
+  let myHeaders = new Headers();
+  myHeaders.append("REQUEST_SOURCE", "EXT");
+  let res = await fetch(`https://www.referplease.com/api/post/unmoderated/count`,
+    { method: "POST", credentials: "include", headers: myHeaders }
+  );
+  let json = await res.json();
+  unmoderatedCount = json;
+  return unmoderatedCount;
+}
+
+function updateBadge() {
+  let ba = chrome.action;
+
+  function removeBadge() {
+    ba.setBadgeBackgroundColor({ color: "#DD4F43" });
+    ba.setBadgeText({ text: '' });   // <-- set text to '' to remove the badge
+  }
+
+  function addBadge(count) {
+    if (count <= 0) return removeBadge();
+    ba.setBadgeBackgroundColor({ color: "#DD4F43" });
+    ba.setBadgeText({ text: '' + count });
+  }
+
+  getUnmoderatedPostCount().then(() => {
+    addBadge(unmoderatedCount);
+  }).catch((e) => {
+    console.error(e);
+    removeBadge();
+  });
+}
+
+setInterval(updateBadge, 3600 * 1000);
+
+updateBadge();
