@@ -91,8 +91,12 @@ async function getUnmoderatedPostCount() {
   let res = await fetch(`https://www.referplease.com/api/post/unmoderated/count`,
     { method: "POST", credentials: "include", headers: myHeaders }
   );
-  let json = await res.json();
-  unmoderatedCount = json;
+  if (res.ok) {
+    let json = await res.json();
+    unmoderatedCount = json;
+    return unmoderatedCount;
+  }
+  unmoderatedCount = 0;
   return unmoderatedCount;
 }
 
