@@ -23,6 +23,7 @@ chrome.runtime.onMessage.addListener(
       console.log('for me', request, sender, sendResponse);
       fetch("https://www.referplease.com/api/thirdparty/post/save", requestOptions).then(res => {
         sendResponse(res.status);
+        refresh_referplease_page();
       }).catch(err => {
         console.error(err);
         sendResponse(500);
@@ -55,6 +56,7 @@ chrome.runtime.onMessage.addListener(async function (message, callback) {
     updateUser(user);
     initialised = true;
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      console.log(tabs);
       chrome.tabs.sendMessage(tabs[0].id, { type: "userdata", data: userdata }, function (response) {
         console.log(response);
       });
@@ -119,6 +121,18 @@ function updateBadge() {
   }).catch((e) => {
     console.error(e);
     removeBadge();
+  });
+}
+
+function refresh_referplease_page() {
+  console.log('refresh');
+  chrome.tabs.query({ url: "http://localhost:3000/*" }, function (tabs) {
+    console.log(tabs);
+    tabs.forEach(tab => {
+      chrome.tabs.sendMessage(tab.id, { type: "refresh" }, function (response) {
+        console.log(response);
+      });
+    });
   });
 }
 
