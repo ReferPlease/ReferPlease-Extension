@@ -6,9 +6,13 @@ console.log(__HOSTNAME);
 if (__REFERPLEASE_HOSTNAMES.includes(__HOSTNAME)) {
   __REFERPLEASE_start();
 }
-/*else if (__HOSTNAME === "localhost") {
+
+//#region comment before publish
+else if (__HOSTNAME === "localhost") {
   __REFERPLEASE_start(); // only for testing
-}*/
+}
+//#endregion comment before publish
+
 else if (__HOSTNAME === "www.linkedin.com") {
   __LINKEDIN_start();
 }
