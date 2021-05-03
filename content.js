@@ -8,9 +8,9 @@ if (__REFERPLEASE_HOSTNAMES.includes(__HOSTNAME)) {
 }
 
 //#region comment before publish
-else if (__HOSTNAME === "localhost") {
-  __REFERPLEASE_start(); // only for testing
-}
+// else if (__HOSTNAME === "localhost") {
+//   __REFERPLEASE_start(); // only for testing
+// }
 //#endregion comment before publish
 
 else if (__HOSTNAME === "www.linkedin.com") {
