@@ -126,7 +126,7 @@ function updateBadge() {
 
 function refresh_referplease_page() {
   console.log('refresh');
-  chrome.tabs.query({ url: "http://localhost:3000/*" }, function (tabs) {
+  chrome.tabs.query({ url: "https://www.referplease.com/*" }, function (tabs) {
     console.log(tabs);
     tabs.forEach(tab => {
       chrome.tabs.sendMessage(tab.id, { type: "refresh" }, function (response) {
