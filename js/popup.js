@@ -1,21 +1,23 @@
-let loggedIn = document.getElementById("loggedIn");
-let loggedOut = document.getElementById("loggedOut");
+let loggedInContainer = document.getElementById("logged__in__container");
+let loggedOutContainer = document.getElementById("logged__out__container");
 let logOutButton = document.getElementById("logout_button");
 let user = null;
 let _try = document.getElementById("try");
-let imageElement = document.getElementById("imageurl");
-let nameElement = document.getElementById("username");
-let showspreadElement = document.getElementById("showspread");
+let userProfileImageElement = document.getElementById("user__profile__image");
+let userNameElement = document.getElementById("user__username");
+let toggleSpreadElement = document.getElementById("spread__toggler");
 
-showspreadElement.addEventListener("change", (e) => {
-  let checked = showspreadElement.checked;
-  console.log(checked);
+//----------------------------------------------------------------------------
+//                    Show/Hide Spead Button Handler
+//----------------------------------------------------------------------------
+toggleSpreadElement.addEventListener("change", (e) => {
+  let checked = toggleSpreadElement.checked;
+  console.log("Spread value", checked);
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    chrome.tabs.sendMessage(
-      tabs[0].id,
-      { type: "spread", data: { spread: checked } },
-      console.log
-    );
+    chrome.tabs.sendMessage(tabs[0].id, {
+      type: "spread",
+      data: { spread: checked },
+    });
   });
 });
 
@@ -40,17 +42,17 @@ function setUser({ firstName, lastName, isLoggedIn, imageUrl }) {
 }
 
 function setLoggedIn() {
-  imageElement.src = user.imageUrl;
-  nameElement.textContent = `${user.firstName} ${
+  userProfileImageElement.src = user.imageUrl;
+  userNameElement.textContent = `${user.firstName} ${
     user.lastName ? user.lastName : ""
   }`;
-  loggedIn.classList.remove("hide");
-  loggedOut.classList.add("hide");
+  loggedInContainer.classList.remove("hide");
+  loggedOutContainer.classList.add("hide");
 }
 
 function setLoggedOut() {
-  loggedOut.classList.remove("hide");
-  loggedIn.classList.add("hide");
+  loggedOutContainer.classList.remove("hide");
+  loggedInContainer.classList.add("hide");
 }
 
 chrome.runtime.onMessage.addListener(function (msg, callback) {
@@ -65,14 +67,14 @@ chrome.runtime.onMessage.addListener(function (msg, callback) {
 function initialise() {
   chrome.runtime.sendMessage("getuser");
   chrome.runtime.sendMessage("try");
-  let checked = showspreadElement.checked;
+  let checked = toggleSpreadElement.checked;
   let local = localStorage.getItem("spread");
   if (local) {
     checked = JSON.parse(local);
   } else {
     localStorage.setItem("spread", JSON.stringify(checked));
   }
-  showspreadElement.checked = checked;
+  toggleSpreadElement.checked = checked;
 }
 
 initialise();
