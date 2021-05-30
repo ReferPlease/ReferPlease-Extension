@@ -7,17 +7,20 @@ let imageElement = document.getElementById("imageurl");
 let nameElement = document.getElementById("username");
 let showspreadElement = document.getElementById("showspread");
 
-showspreadElement.addEventListener("change", e => {
-    let checked = showspreadElement.checked;
-    console.log(checked);
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, { type: "spread", data: { spread: checked } }, console.log);
-    });
+showspreadElement.addEventListener("change", (e) => {
+  let checked = showspreadElement.checked;
+  console.log(checked);
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    chrome.tabs.sendMessage(
+      tabs[0].id,
+      { type: "spread", data: { spread: checked } },
+      console.log
+    );
+  });
 });
 
-
 logOutButton.addEventListener("click", (ev) => {
-    /*chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+  /*chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, { type: "removeSpread", data: null }, console.log);
     });*/
 });
@@ -26,49 +29,50 @@ logOutButton.addEventListener("click", (ev) => {
 }*/
 
 function setUser({ firstName, lastName, isLoggedIn, imageUrl }) {
-    user = {
-        firstName,
-        lastName,
-        isLoggedIn,
-        imageUrl
-    }
-    if (user.isLoggedIn) setLoggedIn();
-    else setLoggedOut();
+  user = {
+    firstName,
+    lastName,
+    isLoggedIn,
+    imageUrl,
+  };
+  if (user.isLoggedIn) setLoggedIn();
+  else setLoggedOut();
 }
 
 function setLoggedIn() {
-    imageElement.src = user.imageUrl;
-    nameElement.textContent = `${user.firstName} ${user.lastName ? user.lastName : ""}`
-    loggedIn.classList.remove("hide");
-    loggedOut.classList.add("hide");
+  imageElement.src = user.imageUrl;
+  nameElement.textContent = `${user.firstName} ${
+    user.lastName ? user.lastName : ""
+  }`;
+  loggedIn.classList.remove("hide");
+  loggedOut.classList.add("hide");
 }
 
 function setLoggedOut() {
-    loggedOut.classList.remove("hide");
-    loggedIn.classList.add("hide");
+  loggedOut.classList.remove("hide");
+  loggedIn.classList.add("hide");
 }
 
 chrome.runtime.onMessage.addListener(function (msg, callback) {
-    let { data, type } = msg;
-    if (type === "user") {
-        setUser(data);
-    }
-    callback("done #56");
-    return true;
+  let { data, type } = msg;
+  if (type === "user") {
+    setUser(data);
+  }
+  callback("done #56");
+  return true;
 });
 
 function initialise() {
-    chrome.runtime.sendMessage("getuser");
-    chrome.runtime.sendMessage("try");
-    let checked = showspreadElement.checked;
-    let local = localStorage.getItem("spread");
-    if (local) {
-        checked = JSON.parse(local);
-    }
-    else {
-        localStorage.setItem("spread", JSON.stringify(checked));
-    }
-    showspreadElement.checked = checked;
+  chrome.runtime.sendMessage("getuser");
+  chrome.runtime.sendMessage("try");
+  let checked = showspreadElement.checked;
+  let local = localStorage.getItem("spread");
+  if (local) {
+    checked = JSON.parse(local);
+  } else {
+    localStorage.setItem("spread", JSON.stringify(checked));
+  }
+  showspreadElement.checked = checked;
 }
 
 initialise();
