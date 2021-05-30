@@ -4,40 +4,39 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../css/reset.css" />
     <link rel="stylesheet" href="../css/popup.css" />
     <title>Refer Please</title>
     <script src="../js/popup.js" defer></script>
   </head>
 
   <body>
-    <div class="card">
-      <div id="loggedIn" class="hide">
-        <div class="row">
-          <img id="imageurl" src="" alt="profile google" />
-          <strong id="username"></strong>
+    <div class="extension__popop">
+      <div id="logged__in__container" class="hide">
+        <div class="row user__profile__container">
+          <img id="user__profile__image" alt="google profile image" />
+          <strong id="user__username"></strong>
         </div>
         <div class="row">
           <input
-            name="showspread"
-            id="showspread"
+            name="spread__toggler"
+            id="spread__toggler"
             aria-label="Show Spread Button"
             type="checkbox"
             checked="true"
           />
-          <label for="showspread">Show Spread Button</label>
+          <label for="spread__toggler">Show Spread Button</label>
         </div>
-        <p>
+        <div class="user__actions__button__container">
           <a target="_blank" href="https://www.referplease.com/profile"
             >View Posts</a
           >
-        </p>
-        <p>
           <a target="_blank" href="https://www.referplease.com/api/logout"
             >Logout</a
           >
-        </p>
+        </div>
       </div>
-      <div id="loggedOut">
+      <div id="logged__out__container">
         <p>
           <a
             id="logout_button"
@@ -47,9 +46,9 @@
           </a>
         </p>
       </div>
-      <p>
+      <div class="user__actions__button__container">
         <a target="_blank" href="https://www.referplease.com/extension">Help</a>
-      </p>
+      </div>
     </div>
   </body>
 </html>
