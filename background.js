@@ -5,6 +5,7 @@ let userdata = {
 };
 let isAdmin = false;
 let unmoderatedCount = 1;
+const REFERPLEASE_HOST_URL = "https://www.referplease.com";
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   console.log(request, sendResponse, sender, "here");
@@ -29,7 +30,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     console.log("Share Post Request: ", request, sender, sendResponse);
     try {
       const res = fetch(
-        "https://www.referplease.com/api/thirdparty/post/save",
+        REFERPLEASE_HOST_URL + "/api/thirdparty/post/save",
         requestOptions
       );
       sendResponse(res.status);
@@ -86,7 +87,7 @@ chrome.runtime.onMessage.addListener(async function (message, callback) {
 });
 
 async function fetchUser() {
-  let user = await fetch(`https://www.referplease.com/api/profile`, {
+  let user = await fetch(REFERPLEASE_HOST_URL + `/api/profile`, {
     method: "POST",
     credentials: "include",
   });
@@ -94,16 +95,13 @@ async function fetchUser() {
 }
 
 async function getUnmoderatedPostCount() {
-  let res = await fetch(
-    `https://www.referplease.com/api/post/unmoderated/count`,
-    {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        REQUEST_SOURCE: "EXT",
-      },
-    }
-  );
+  let res = await fetch(REFERPLEASE_HOST_URL + `/api/post/unmoderated/count`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      REQUEST_SOURCE: "EXT",
+    },
+  });
   if (res.ok) {
     let json = await res.json();
     unmoderatedCount = json;
@@ -122,23 +120,24 @@ function updateBadge() {
   }
 
   function addBadge(count) {
+    console.log("Baddgeeee", { text: "" + count });
     if (count <= 0) return removeBadge();
     ba.setBadgeBackgroundColor({ color: "#DD4F43" });
     ba.setBadgeText({ text: "" + count });
   }
-
-  try {
-    const count = getUnmoderatedPostCount();
-    addBadge(count);
-  } catch (err) {
-    console.error(err);
-    removeBadge();
-  }
+  getUnmoderatedPostCount()
+    .then((count) => {
+      addBadge(count);
+    })
+    .catch((err) => {
+      console.error(err);
+      removeBadge();
+    });
 }
 
 function refresh_referplease_page() {
   console.log("refresh");
-  chrome.tabs.query({ url: "https://www.referplease.com/*" }, function (tabs) {
+  chrome.tabs.query({ url: REFERPLEASE_HOST_URL + "/*" }, function (tabs) {
     console.log(tabs);
     tabs.forEach((tab) => {
       chrome.tabs.sendMessage(tab.id, { type: "refresh" }, function (response) {
