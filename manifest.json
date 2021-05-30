@@ -1,6 +1,23 @@
 {
   "manifest_version": 3,
   "name": "Refer Please",
+  "default_locale": "en",
+  "description": "Every employee is a recruiter. Sharing only dev jobs.",
+  "action": {
+    "default_icon": {
+      "16": "./assets/icons/icon16.png",
+      "24": "./assets/icons/icon24.png",
+      "32": "./assets/icons/icon32.png"
+    },
+    "default_title": "Refer Please",
+    "default_popup": "./html/popup.html"
+  },
+  "homepage_url": "https://referplease.com",
+  "icons": {
+    "16": "./assets/icons/icon16.png",
+    "48": "./assets/icons/icon48.png",
+    "128": "./assets/icons/icon128.png"
+  },
   "version": "2.1",
   "content_scripts": [
     {
@@ -21,9 +38,5 @@
   "permissions": ["webRequest"],
   "background": {
     "service_worker": "background.js"
-  },
-  "action": {
-    "default_icon": "./assets/logo.png",
-    "default_popup": "./html/popup.html"
   }
 }
