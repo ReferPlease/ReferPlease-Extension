@@ -10,10 +10,6 @@
   display: none;
 }
 
-.title {
-  color: grey;
-  font-size: 18px;
-}
 /* User action button */
 .user__actions__button__container {
   display: flex;
