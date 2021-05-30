@@ -3,11 +3,7 @@
   "name": "Refer Please",
   "description": "Every employee is a recruiter. Sharing only dev jobs.",
   "action": {
-    "default_icon": {
-      "16": "./assets/icons/icon16.png",
-      "24": "./assets/icons/icon24.png",
-      "32": "./assets/icons/icon32.png"
-    },
+    "default_icon": "./assets/icons/icon16.png",
     "default_title": "Refer Please",
     "default_popup": "./html/popup.html"
   },
