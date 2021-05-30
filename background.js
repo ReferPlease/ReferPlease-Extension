@@ -1,5 +1,10 @@
 var res;
-let initialised = false;
+let GLOBAL_EXTENSION_INITIALIZED = false;
+let userdata = {
+  isLoggedIn: false,
+};
+let isAdmin = false;
+let unmoderatedCount = 1;
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   console.log(request, sendResponse, sender, "here");
@@ -8,41 +13,34 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       ? "from a content script:" + sender.tab.url
       : "from the extension"
   );
+  //-----------------------------------------------------------------------------
+  //                          Share a Post
+  //-----------------------------------------------------------------------------
   if (request.postUrl) {
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    myHeaders.append("mode", "no-cors");
-
-    var raw = JSON.stringify(request);
-
     var requestOptions = {
       method: "POST",
-      headers: myHeaders,
-      body: raw,
+      headers: {
+        "Content-Type": "application/json",
+        mode: "no-cors",
+      },
+      body: JSON.stringify(request),
       redirect: "follow",
     };
-    console.log("for me", request, sender, sendResponse);
-    fetch(
-      "https://www.referplease.com/api/thirdparty/post/save",
-      requestOptions
-    )
-      .then((res) => {
-        sendResponse(res.status);
-        refresh_referplease_page();
-      })
-      .catch((err) => {
-        console.error(err);
-        sendResponse(500);
-      });
+    console.log("Share Post Request: ", request, sender, sendResponse);
+    try {
+      const res = fetch(
+        "https://www.referplease.com/api/thirdparty/post/save",
+        requestOptions
+      );
+      sendResponse(res.status);
+      refresh_referplease_page();
+    } catch (err) {
+      console.error(err);
+      sendResponse(500);
+    }
   }
   return true;
 });
-
-let userdata = {
-  isLoggedIn: false,
-};
-let isAdmin = false;
-let unmoderatedCount = 1;
 
 function updateUser(data) {
   userdata = data;
@@ -58,7 +56,7 @@ chrome.runtime.onMessage.addListener(async function (message, callback) {
   if (message === "try") {
     let user = await fetchUser();
     updateUser(user);
-    initialised = true;
+    GLOBAL_EXTENSION_INITIALIZED = true;
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       console.log(tabs);
       chrome.tabs.sendMessage(
@@ -72,20 +70,17 @@ chrome.runtime.onMessage.addListener(async function (message, callback) {
     console.log(user);
   }
   if (message === "getuser") {
-    fetchUser()
-      .then((user) => {
-        updateUser(user);
-        initialised = true;
-        chrome.runtime.sendMessage({
-          type: "user",
-          data: userdata,
-        });
-      })
-      .catch(console.error);
-    chrome.runtime.sendMessage({
-      type: "user",
-      data: userdata,
-    });
+    try {
+      const user = await fetchUser();
+      updateUser(user);
+      GLOBAL_EXTENSION_INITIALIZED = true;
+      chrome.runtime.sendMessage({
+        type: "user",
+        data: userdata,
+      });
+    } catch (err) {
+      console.log(err); //Error fetching the user TODO: Show user an alert of error
+    }
   }
   return true;
 });
@@ -99,11 +94,15 @@ async function fetchUser() {
 }
 
 async function getUnmoderatedPostCount() {
-  let myHeaders = new Headers();
-  myHeaders.append("REQUEST_SOURCE", "EXT");
   let res = await fetch(
     `https://www.referplease.com/api/post/unmoderated/count`,
-    { method: "POST", credentials: "include", headers: myHeaders }
+    {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        REQUEST_SOURCE: "EXT",
+      },
+    }
   );
   if (res.ok) {
     let json = await res.json();
@@ -128,14 +127,13 @@ function updateBadge() {
     ba.setBadgeText({ text: "" + count });
   }
 
-  getUnmoderatedPostCount()
-    .then(() => {
-      addBadge(unmoderatedCount);
-    })
-    .catch((e) => {
-      console.error(e);
-      removeBadge();
-    });
+  try {
+    const count = getUnmoderatedPostCount();
+    addBadge(count);
+  } catch (err) {
+    console.error(err);
+    removeBadge();
+  }
 }
 
 function refresh_referplease_page() {

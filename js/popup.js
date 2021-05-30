@@ -1,6 +1,6 @@
 let loggedInContainer = document.getElementById("logged__in__container");
 let loggedOutContainer = document.getElementById("logged__out__container");
-let logOutButton = document.getElementById("logout_button");
+let loginButton = document.getElementById("login__button");
 let user = null;
 let _try = document.getElementById("try");
 let userProfileImageElement = document.getElementById("user__profile__image");
@@ -21,7 +21,7 @@ toggleSpreadElement.addEventListener("change", (e) => {
   });
 });
 
-logOutButton.addEventListener("click", (ev) => {
+loginButton.addEventListener("click", (ev) => {
   /*chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, { type: "removeSpread", data: null }, console.log);
     });*/
@@ -64,7 +64,7 @@ chrome.runtime.onMessage.addListener(function (msg, callback) {
   return true;
 });
 
-function initialise() {
+function initialiseExtension() {
   chrome.runtime.sendMessage("getuser");
   chrome.runtime.sendMessage("try");
   let checked = toggleSpreadElement.checked;
@@ -77,4 +77,4 @@ function initialise() {
   toggleSpreadElement.checked = checked;
 }
 
-initialise();
+initialiseExtension();
