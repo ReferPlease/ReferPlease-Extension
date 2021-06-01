@@ -1,50 +1,58 @@
 var res;
-let initialised = false;
-
-chrome.runtime.onMessage.addListener(
-  function (request, sender, sendResponse) {
-    console.log(request, sendResponse, sender, 'here');
-    console.log(sender.tab ?
-      "from a content script:" + sender.tab.url :
-      "from the extension");
-    if (request.postUrl) {
-      var myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      myHeaders.append("mode", "no-cors");
-
-      var raw = JSON.stringify(request);
-
-      var requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow'
-      };
-      console.log('for me', request, sender, sendResponse);
-      fetch("https://www.referplease.com/api/thirdparty/post/save", requestOptions).then(res => {
-        sendResponse(res.status);
-        refresh_referplease_page();
-      }).catch(err => {
-        console.error(err);
-        sendResponse(500);
-      });
-    }
-    return true;
-  }
-);
-
+let GLOBAL_EXTENSION_INITIALIZED = false;
 let userdata = {
-  isLoggedIn: false
+  isLoggedIn: false,
 };
 let isAdmin = false;
 let unmoderatedCount = 1;
+const REFERPLEASE_HOST_URL = "https://www.referplease.com";
+
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  console.log(request, sendResponse, sender, "here");
+  console.log(
+    sender.tab
+      ? "from a content script:" + sender.tab.url
+      : "from the extension"
+  );
+  //-----------------------------------------------------------------------------
+  //                          Share a Post
+  //-----------------------------------------------------------------------------
+  if (request.postUrl) {
+    var requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        mode: "no-cors",
+      },
+      body: JSON.stringify(request),
+      redirect: "follow",
+    };
+    console.log("Share Post Request: ", request, sender, sendResponse);
+    try {
+      const res = fetch(
+        REFERPLEASE_HOST_URL + "/api/thirdparty/post/save",
+        requestOptions
+      );
+      console.log(res);
+      res.then(r => {
+        sendResponse(r.status);
+        refresh_referplease_page();
+      }).catch(err => {
+        sendResponse(null);
+      });
+    } catch (err) {
+      console.error(err);
+      sendResponse(500);
+    }
+  }
+  return true;
+});
 
 function updateUser(data) {
   userdata = data;
   if (userdata.isLoggedIn) {
-    isAdmin = userdata.roles.map(x => x.authority).includes("ROLE_ADMIN");
-  }
-  else {
+    isAdmin = userdata.roles.map((x) => x.authority).includes("ROLE_ADMIN");
+  } else {
     isAdmin = false;
   }
 }
@@ -54,45 +62,51 @@ chrome.runtime.onMessage.addListener(async function (message, callback) {
   if (message === "try") {
     let user = await fetchUser();
     updateUser(user);
-    initialised = true;
+    GLOBAL_EXTENSION_INITIALIZED = true;
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       console.log(tabs);
-      chrome.tabs.sendMessage(tabs[0].id, { type: "userdata", data: userdata }, function (response) {
-        console.log(response);
-      });
+      chrome.tabs.sendMessage(
+        tabs[0].id,
+        { type: "userdata", data: userdata },
+        function (response) {
+          console.log(response);
+        }
+      );
     });
     console.log(user);
   }
   if (message === "getuser") {
-    fetchUser().then(user => {
+    try {
+      const user = await fetchUser();
       updateUser(user);
-      initialised = true;
+      GLOBAL_EXTENSION_INITIALIZED = true;
       chrome.runtime.sendMessage({
         type: "user",
-        data: userdata
+        data: userdata,
       });
-    }).catch(console.error);
-    chrome.runtime.sendMessage({
-      type: "user",
-      data: userdata
-    });
+    } catch (err) {
+      console.log(err); //Error fetching the user TODO: Show user an alert of error
+    }
   }
   return true;
 });
 
 async function fetchUser() {
-  let user = await fetch(`https://www.referplease.com/api/profile`,
-    { method: "POST", credentials: "include" }
-  );
+  let user = await fetch(REFERPLEASE_HOST_URL + `/api/profile`, {
+    method: "POST",
+    credentials: "include",
+  });
   return await user.json();
 }
 
 async function getUnmoderatedPostCount() {
-  let myHeaders = new Headers();
-  myHeaders.append("REQUEST_SOURCE", "EXT");
-  let res = await fetch(`https://www.referplease.com/api/post/unmoderated/count`,
-    { method: "POST", credentials: "include", headers: myHeaders }
-  );
+  let res = await fetch(REFERPLEASE_HOST_URL + `/api/post/unmoderated/count`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      REQUEST_SOURCE: "EXT",
+    },
+  });
   if (res.ok) {
     let json = await res.json();
     unmoderatedCount = json;
@@ -107,28 +121,30 @@ function updateBadge() {
 
   function removeBadge() {
     ba.setBadgeBackgroundColor({ color: "#DD4F43" });
-    ba.setBadgeText({ text: '' });   // <-- set text to '' to remove the badge
+    ba.setBadgeText({ text: "" }); // <-- set text to '' to remove the badge
   }
 
   function addBadge(count) {
+    console.log("Baddgeeee", { text: "" + count });
     if (count <= 0) return removeBadge();
     ba.setBadgeBackgroundColor({ color: "#DD4F43" });
-    ba.setBadgeText({ text: '' + count });
+    ba.setBadgeText({ text: "" + count });
   }
-
-  getUnmoderatedPostCount().then(() => {
-    addBadge(unmoderatedCount);
-  }).catch((e) => {
-    console.error(e);
-    removeBadge();
-  });
+  getUnmoderatedPostCount()
+    .then((count) => {
+      addBadge(count);
+    })
+    .catch((err) => {
+      console.error(err);
+      removeBadge();
+    });
 }
 
 function refresh_referplease_page() {
-  console.log('refresh');
-  chrome.tabs.query({ url: "https://www.referplease.com/*" }, function (tabs) {
+  console.log("refresh");
+  chrome.tabs.query({ url: REFERPLEASE_HOST_URL + "/*" }, function (tabs) {
     console.log(tabs);
-    tabs.forEach(tab => {
+    tabs.forEach((tab) => {
       chrome.tabs.sendMessage(tab.id, { type: "refresh" }, function (response) {
         console.log(response);
       });

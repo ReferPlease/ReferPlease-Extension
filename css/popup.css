@@ -1,0 +1,50 @@
+.extension__popop {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  max-width: 300px;
+  margin: 8px auto 18px auto;
+  text-align: left;
+  min-width: 250px;
+}
+
+.hide {
+  display: none;
+}
+
+/* User action button */
+.user__actions__button__container {
+  display: flex;
+  flex-direction: column;
+}
+.user__actions__button__container a,
+#logged__out__container a {
+  margin: 2px 10px;
+  text-decoration: none;
+  background-color: #000;
+  color: white;
+  border: none;
+  outline: none;
+  display: inline-block;
+  padding: 8px;
+  text-align: center;
+  cursor: pointer;
+  width: -webkit-fill-available;
+  font-size: 16px;
+}
+.user__actions__button__container a:hover,
+#logged__out__container a:hover {
+  background-color: rgb(32, 32, 32);
+}
+/* User Profile */
+.user__profile__container > img {
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+}
+.row {
+  display: flex;
+  align-items: center;
+}
+
+.row > *:first-child {
+  margin: 0.6rem;
+}
