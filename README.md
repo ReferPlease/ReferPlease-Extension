@@ -61,7 +61,7 @@ This project is available under [MIT](https://github.com/royatirek/extension-Lin
 ## Contributors
 
 - [Atirek Roy](https://github.com/royatirek)
-- [Rahul](https://github.com/GrayHat12)
+- [Rahul Singh](https://github.com/GrayHat12)
 - [Harsh Goel](https://github.com/harshgoel05)
 
 ## Show your support
