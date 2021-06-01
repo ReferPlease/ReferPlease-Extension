@@ -1,33 +1,37 @@
 {
-    "manifest_version": 3,
-    "name": "Add Referrals",
-    "version": "1.14",
-    "content_scripts": [
-        {
-            "matches": [
-                "https://www.linkedin.com/*",
-                "https://www.linkedin.com/**",
-                "https://www.referplease.com/*",
-                "https://www.referplease.com/**"
-            ],
-            "js": [
-                "linkedin_content.js",
-                "referplease_content.js",
-                "content.js"
-            ]
-        }
-    ],
-    "host_permissions": [
-        "https://www.referplease.com/*"
-    ],
-    "permissions": [
-        "webRequest"
-    ],
-    "background": {
-        "service_worker": "background.js"
-    },
-    "action": {
-        "default_icon": "logo.png",
-        "default_popup": "popup.html"
+  "manifest_version": 3,
+  "name": "Refer Please",
+  "description": "Every employee is a recruiter. Sharing only dev jobs.",
+  "action": {
+    "default_icon": "./assets/icons/icon16.png",
+    "default_title": "Refer Please",
+    "default_popup": "./html/popup.html"
+  },
+  "homepage_url": "https://referplease.com",
+  "icons": {
+    "16": "./assets/icons/icon16.png",
+    "48": "./assets/icons/icon48.png",
+    "128": "./assets/icons/icon128.png"
+  },
+  "version": "2.1",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.linkedin.com/*",
+        "https://www.linkedin.com/**",
+        "https://www.referplease.com/*",
+        "https://www.referplease.com/**"
+      ],
+      "js": [
+        "./js/linkedin_content.js",
+        "./js/referplease_content.js",
+        "./js/content.js"
+      ]
     }
+  ],
+  "host_permissions": ["https://www.referplease.com/*"],
+  "permissions": ["webRequest"],
+  "background": {
+    "service_worker": "background.js"
+  }
 }
