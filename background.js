@@ -33,8 +33,13 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         REFERPLEASE_HOST_URL + "/api/thirdparty/post/save",
         requestOptions
       );
-      sendResponse(res.status);
-      refresh_referplease_page();
+      console.log(res);
+      res.then(r => {
+        sendResponse(r.status);
+        refresh_referplease_page();
+      }).catch(err => {
+        sendResponse(null);
+      });
     } catch (err) {
       console.error(err);
       sendResponse(500);
