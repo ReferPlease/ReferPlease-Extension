@@ -28,8 +28,7 @@ Feel free to check [issues page](https://github.com/royatirek/extension-Linkedin
 
 ## 📝 License
 
-Copyright © 2021 [Refer Please](https://github.com/royatirek).
-
+Copyright © 2021 ReferPlease
 This project is available under [MIT](https://github.com/royatirek/extension-Linkedin-Share/blob/LICENSE) license.
 
 ## FAQ
