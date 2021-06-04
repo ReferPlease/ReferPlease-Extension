@@ -6,7 +6,7 @@
 
 > Every employee is a recruiter.
 
-### 🏠 [Homepage](https://referplease.com)
+### 🏠 [Homepage](https://www.referplease.com/extension)
 
 ## Getting Started
 
