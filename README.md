@@ -8,6 +8,8 @@
 
 ### 🏠 [Homepage](https://www.referplease.com/extension)
 
+## Available in [chrome store](https://chrome.google.com/webstore/detail/add-referrals/bcgolnnfckpihmbpldhhdhfofpplfnei)
+
 ## Getting Started
 
 ### How to install?
@@ -39,7 +41,7 @@ This project is available under [MIT](https://github.com/royatirek/extension-Lin
 
 **Q:** How is the purpose of this extension?
 
-**A:** We believe that sharing is caring. [Refer Please](https://referplease.com) provides you a platform to share and get referral opportunities.
+**A:** We believe that sharing is caring. [ReferPlease](https://referplease.com) provides you a platform to share and get referral opportunities.
 
 **Q:** What kind of posts can I spread?
 
