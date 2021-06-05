@@ -28,12 +28,12 @@
 
 Contributions, issues and feature requests are welcome!
 
-Feel free to check [issues page](https://github.com/ReferPlease/ReferPlease-Extension/issues). You can also take a look at the [contributing guide](https://github.com/ReferPlease/ReferPlease-Extension/blob/CONTRIBUTING.MD).
+Feel free to check [issues page](https://github.com/ReferPlease/ReferPlease-Extension/issues). You can also take a look at the [contributing guide](https://github.com/ReferPlease/ReferPlease-Extension/blob/master/CONTRIBUTING.MD).
 
 ## 📝 License
 
 Copyright © 2021 ReferPlease
-This project is available under [MIT](https://github.com/ReferPlease/ReferPlease-Extension/blob/LICENSE) license.
+This project is available under [MIT](https://github.com/ReferPlease/ReferPlease-Extension/blob/master/LICENSE) license.
 
 ## FAQ
 
