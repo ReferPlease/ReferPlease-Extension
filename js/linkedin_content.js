@@ -296,7 +296,7 @@ const callback = function (mutationsList, observer) {
       ) {
         if (user.isLoggedIn && popupState.spread) {
           //console.warn("call from callback");
-          console.warn("appending to",mutation.target);
+          //console.warn("appending to",mutation.target);
           appendButtonToContainer(mutation.target);
         }
       }
