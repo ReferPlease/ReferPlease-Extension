@@ -65,13 +65,10 @@ chrome.runtime.onMessage.addListener(async function (message, callback) {
     GLOBAL_EXTENSION_INITIALIZED = true;
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       console.log(tabs);
-      chrome.tabs.sendMessage(
-        tabs[0].id,
-        { type: "userdata", data: userdata },
-        function (response) {
-          console.log(response);
-        }
-      );
+      if (!tabs[0]) return;
+      chrome.tabs.sendMessage(tabs[0].id, { type: "userdata", data: userdata }, function (response) {
+        console.log(response);
+      });
     });
     console.log(user);
   }
