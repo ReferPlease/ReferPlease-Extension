@@ -63,7 +63,7 @@ function appendButtonToContainer(buttonContainer) {
   buttonContainer.classList.add("__processed");
   try {
     let ember = buttonContainer.closest("div[data-urn]");
-    let hrefEl = ember.querySelector("a[data-control-name]");
+    let hrefEl = ember.querySelector("a.app-aware-link");
     let href = hrefEl.href;
     //console.warn(href);
     if (COMPANY_URL_REGEX.test(href)) {
@@ -296,6 +296,7 @@ const callback = function (mutationsList, observer) {
       ) {
         if (user.isLoggedIn && popupState.spread) {
           //console.warn("call from callback");
+          console.warn("appending to",mutation.target);
           appendButtonToContainer(mutation.target);
         }
       }
