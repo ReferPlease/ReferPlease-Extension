@@ -167,7 +167,7 @@ async function sendSaveRequestToApi(postContainer) {
     _postUrl = _postUrl.href;
   }
   let content = postContainer.getElementsByClassName(
-    "feed-shared-text relative feed-shared-update-v2__commentary  ember-view"
+    "feed-shared-update-v2__description-wrapper"
   )[0];
   let contentClone = content.cloneNode(true);
   contentClone.querySelectorAll("a").forEach((anchor) => {
