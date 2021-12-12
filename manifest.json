@@ -1,5 +1,5 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 5,
   "name": "Refer Please",
   "description": "Every employee is a recruiter. Sharing only dev jobs.",
   "action": {
@@ -13,7 +13,7 @@
     "48": "./assets/icons/icon48.png",
     "128": "./assets/icons/icon128.png"
   },
-  "version": "2.11",
+  "version": "2.15",
   "content_scripts": [
     {
       "matches": [
