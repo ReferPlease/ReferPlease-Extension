@@ -1,5 +1,5 @@
 {
-  "manifest_version": 5,
+  "manifest_version": 3,
   "name": "Refer Please",
   "description": "Every employee is a recruiter. Sharing only dev jobs.",
   "action": {
